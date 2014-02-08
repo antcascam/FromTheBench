@@ -15,6 +15,7 @@ import org.json.JSONObject;
 
 import android.app.Activity;
 import android.app.Dialog;
+import android.app.ProgressDialog;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.drawable.ColorDrawable;
@@ -33,6 +34,7 @@ public class Login extends Activity implements OnClickListener {
 	private Dialog customDialog = null;
 	private EditText txtUsuario, txtPassword;
 	private Button connectar;
+	private ProgressDialog progressDialog = null;
 	public static final String PREFS_NAME = "LoginPrefsFile";
 	private static final String PREF_USERNAME = "username";
 	private static final String PREF_PASSWORD = "password";
@@ -42,7 +44,7 @@ public class Login extends Activity implements OnClickListener {
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.login);
-		
+
 		Intent intent = new Intent(this, DownloadService.class);
 		startService(intent);
 
@@ -67,6 +69,14 @@ public class Login extends Activity implements OnClickListener {
 		}
 	}
 
+	public void showProgressDialog() {
+		progressDialog = new ProgressDialog(this);
+		progressDialog.show();
+		progressDialog.setContentView(R.layout.progressdialog);
+		// se ppdrá cerrar simplemente pulsando back
+		progressDialog.setCancelable(true);
+	}
+
 	public void onClick(View v) {
 		if (txtUsuario.getText().toString().equals("")
 				|| txtPassword.getText().toString().equals("")) {
@@ -82,6 +92,7 @@ public class Login extends Activity implements OnClickListener {
 	}
 
 	private void loginProcess(String user, String password) {
+		showProgressDialog();
 		JSONReaderTask jsonReader = new JSONReaderTask();
 		String url = "http://ftbsports.com/android/api/login.php?user=" + user
 				+ "&password=" + password;
@@ -101,7 +112,7 @@ public class Login extends Activity implements OnClickListener {
 				.findViewById(R.id.errorMessage);
 		contenido.setText(errorMessage);
 
-		((Button) customDialog.findViewById(R.id.errorButton))
+		((Button) customDialog.findViewById(R.id.errorMessage))
 				.setOnClickListener(new OnClickListener() {
 					@Override
 					public void onClick(View view) {
@@ -109,6 +120,7 @@ public class Login extends Activity implements OnClickListener {
 					}
 				});
 		customDialog.show();
+		progressDialog.cancel();
 	}
 
 	public void readResponse() {
@@ -118,6 +130,7 @@ public class Login extends Activity implements OnClickListener {
 			if (value == 0) {
 				Intent intent = new Intent();
 				intent.setClass(getApplicationContext(), Dashboard.class);
+				progressDialog.cancel();
 				startActivity(intent);
 			} else {
 				if (value == -1) {

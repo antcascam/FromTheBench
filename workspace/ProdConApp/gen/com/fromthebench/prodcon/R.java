@@ -14,34 +14,65 @@ public final class R {
         public static final int alert=0x7f020000;
         public static final int alert_button_ok=0x7f020001;
         public static final int background_login=0x7f020002;
-        public static final int button_ok=0x7f020003;
-        public static final int dash_example=0x7f020004;
-        public static final int ic_launcher=0x7f020005;
-        public static final int imput_form=0x7f020006;
-        public static final int logo_ftb=0x7f020007;
+        public static final int button_acercademi=0x7f020003;
+        public static final int button_cache=0x7f020004;
+        public static final int button_cerrarsesion=0x7f020005;
+        public static final int button_ok=0x7f020006;
+        public static final int button_procon=0x7f020007;
+        public static final int dash_example=0x7f020008;
+        public static final int ic_launcher=0x7f020009;
+        public static final int imput_form=0x7f02000a;
+        public static final int lateral_der=0x7f02000b;
+        public static final int lateral_izq=0x7f02000c;
+        public static final int loader=0x7f02000d;
+        public static final int loading_big=0x7f02000e;
+        public static final int logo_ftb=0x7f02000f;
+        public static final int spinner=0x7f020010;
     }
     public static final class id {
-        public static final int LayoutError=0x7f060000;
-        public static final int errorButton=0x7f060002;
-        public static final int errorMessage=0x7f060001;
-        public static final int loginButton=0x7f060006;
-        public static final int loginLayoutLogo=0x7f060003;
-        public static final int passwordText=0x7f060005;
-        public static final int userText=0x7f060004;
+        public static final int FrameLayout1=0x7f060014;
+        public static final int LayoutAbout=0x7f060010;
+        public static final int LayoutError=0x7f06000d;
+        public static final int aboutButton=0x7f060002;
+        public static final int aboutTxt=0x7f060001;
+        public static final int dashBoardAboutBtn=0x7f060009;
+        public static final int dashBoardCacheBtn=0x7f06000b;
+        public static final int dashBoardImagesLayout=0x7f060004;
+        public static final int dashBoardLogoutBtn=0x7f06000c;
+        public static final int dashBoardMainLayout=0x7f060003;
+        public static final int dashBoardProdConBtn=0x7f06000a;
+        public static final int dashboardLayoutLogo=0x7f060008;
+        public static final int dashboardLogoContainer=0x7f060007;
+        public static final int errorButton=0x7f06000f;
+        public static final int errorMessage=0x7f06000e;
+        public static final int imageView1=0x7f060015;
+        public static final int layoutAbout=0x7f060000;
+        public static final int leftLight=0x7f060005;
+        public static final int loginButton=0x7f060013;
+        public static final int passwordText=0x7f060012;
+        public static final int rightLight=0x7f060006;
+        public static final int userText=0x7f060011;
     }
     public static final class layout {
-        public static final int dashboard=0x7f030000;
-        public static final int error=0x7f030001;
-        public static final int login=0x7f030002;
+        public static final int aboutme=0x7f030000;
+        public static final int dashboard=0x7f030001;
+        public static final int error=0x7f030002;
+        public static final int login=0x7f030003;
+        public static final int progressdialog=0x7f030004;
     }
     public static final class string {
+        public static final int aboutBtn=0x7f040008;
         public static final int action_settings=0x7f040001;
         public static final int app_name=0x7f040000;
+        public static final int cacheBtn=0x7f04000a;
         public static final int dashboard=0x7f040002;
+        public static final int lightDesc=0x7f040007;
         public static final int loginButton=0x7f040005;
         public static final int loginPass=0x7f040004;
         public static final int loginUser=0x7f040003;
         public static final int logoDesc=0x7f040006;
+        public static final int logoutBtn=0x7f04000b;
+        public static final int prodconBtn=0x7f040009;
     }
     public static final class style {
         /** 

@@ -7,5 +7,10 @@
     <string name="loginPass">CONTRASEÑA</string>
     <string name="loginButton">CONTINUAR</string>
     <string name="logoDesc">Background logo</string>
+    <string name="lightDesc">Background light</string>
+    <string name="aboutBtn">ACERCA DE MI</string>
+    <string name="prodconBtn">PRO/CON</string>
+    <string name="cacheBtn">VACIAR CACHÉ</string>
+    <string name="logoutBtn">CERRAR SESIÓN</string>
 
 </resources>
