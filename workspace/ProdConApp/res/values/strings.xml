@@ -1,0 +1,11 @@
+<resources>
+
+    <string name="app_name">ProdCon App</string>
+    <string name="action_settings">Settings</string>
+    <string name="dashboard">Dashboard</string>
+    <string name="loginUser">USUARIO</string>
+    <string name="loginPass">CONTRASEÑA</string>
+    <string name="loginButton">CONTINUAR</string>
+    <string name="logoDesc">Background logo</string>
+
+</resources>
