@@ -14,47 +14,45 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import android.app.Activity;
-import android.app.Dialog;
-import android.app.ProgressDialog;
+import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.graphics.drawable.ColorDrawable;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 import android.view.View.OnClickListener;
-import android.view.Window;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
 
 public class Login extends Activity implements OnClickListener {
 	private String jsonResult;
-	private Dialog customDialog = null;
 	private EditText txtUsuario, txtPassword;
 	private Button connectar;
-	private ProgressDialog progressDialog = null;
-	public static final String PREFS_NAME = "LoginPrefsFile";
+	private String username;
+	private String password;
+	private final static int IMGLOADER = 0;
+	public static final String PREFS_LOGIN_NAME = "LoginPrefsFile";
 	private static final String PREF_USERNAME = "username";
 	private static final String PREF_PASSWORD = "password";
 
-	/** Called when the activity is first created. */
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.login);
 
-		Intent intent = new Intent(this, DownloadService.class);
-		startService(intent);
-
 		connectar = (Button) findViewById(R.id.loginButton);
 		txtUsuario = (EditText) findViewById(R.id.userText);
 		txtPassword = (EditText) findViewById(R.id.passwordText);
+		connectar.setOnClickListener(this);
 
-		SharedPreferences pref = getSharedPreferences(PREFS_NAME, MODE_PRIVATE);
-		String username = pref.getString(PREF_USERNAME, null);
-		String password = pref.getString(PREF_PASSWORD, null);
+		SharedPreferences pref = getSharedPreferences(PREFS_LOGIN_NAME,
+				MODE_PRIVATE);
+		username = pref.getString(PREF_USERNAME, null);
+		password = pref.getString(PREF_PASSWORD, null);
 
 		if (username != null) {
 			txtUsuario.setText(username, TextView.BufferType.EDITABLE);
@@ -62,29 +60,49 @@ public class Login extends Activity implements OnClickListener {
 		if (password != null) {
 			txtPassword.setText(password, TextView.BufferType.EDITABLE);
 		}
-		connectar.setOnClickListener(this);
+		tryToStartConnection();
+	}
 
+	private void tryToStartConnection() {
+		if (!checkConnection(this)) {
+			Notifications.showProgressDialog(this, "Iniciando sesión...");
+			((Button) Notifications.customDialog.findViewById(R.id.errorButton))
+					.setOnClickListener(new OnClickListener() {
+						@Override
+						public void onClick(View view) {
+							Notifications.customDialog.dismiss();
+							Notifications.cancelProgressDialog();
+							finish();
+						}
+					});
+			Notifications
+					.showConnectionError(
+							this,
+							"Por favor, compruebe su conexión a internet y vuelva a iniciar la aplicación, gracias.");
+		} else {
+			Intent intent = new Intent(this, DownloadService.class);
+			startActivityForResult(intent, IMGLOADER);
+		}
+	}
+
+	@Override
+	protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+		super.onActivityResult(requestCode, resultCode, data);
 		if (username != null && password != null) {
 			loginProcess(username, password);
 		}
 	}
 
-	public void showProgressDialog() {
-		progressDialog = new ProgressDialog(this);
-		progressDialog.show();
-		progressDialog.setContentView(R.layout.progressdialog);
-		// se ppdrá cerrar simplemente pulsando back
-		progressDialog.setCancelable(true);
-	}
-
 	public void onClick(View v) {
+		Notifications.showProgressDialog(this, "Iniciando sesión...");
 		if (txtUsuario.getText().toString().equals("")
 				|| txtPassword.getText().toString().equals("")) {
-			showError("Por favor, rellene los campos usuario y contraseña.");
+			Notifications.showMessage(this,
+					"Por favor, rellene los campos usuario y contraseña.");
 		} else {
 			String user = txtUsuario.getText().toString();
 			String password = txtPassword.getText().toString();
-			getSharedPreferences(PREFS_NAME, MODE_PRIVATE).edit()
+			getSharedPreferences(PREFS_LOGIN_NAME, MODE_PRIVATE).edit()
 					.putString(PREF_USERNAME, user)
 					.putString(PREF_PASSWORD, password).commit();
 			loginProcess(user, password);
@@ -92,35 +110,10 @@ public class Login extends Activity implements OnClickListener {
 	}
 
 	private void loginProcess(String user, String password) {
-		showProgressDialog();
 		JSONReaderTask jsonReader = new JSONReaderTask();
 		String url = "http://ftbsports.com/android/api/login.php?user=" + user
 				+ "&password=" + password;
-		// passes values for the urls string array
 		jsonReader.execute(new String[] { url });
-	}
-
-	public void showError(String errorMessage) {
-		customDialog = new Dialog(this);
-		customDialog.getWindow().setBackgroundDrawable(
-				new ColorDrawable(android.graphics.Color.TRANSPARENT));
-		customDialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
-		customDialog.setCancelable(false);
-		customDialog.setContentView(R.layout.error);
-
-		TextView contenido = (TextView) customDialog
-				.findViewById(R.id.errorMessage);
-		contenido.setText(errorMessage);
-
-		((Button) customDialog.findViewById(R.id.errorMessage))
-				.setOnClickListener(new OnClickListener() {
-					@Override
-					public void onClick(View view) {
-						customDialog.dismiss();
-					}
-				});
-		customDialog.show();
-		progressDialog.cancel();
 	}
 
 	public void readResponse() {
@@ -130,18 +123,21 @@ public class Login extends Activity implements OnClickListener {
 			if (value == 0) {
 				Intent intent = new Intent();
 				intent.setClass(getApplicationContext(), Dashboard.class);
-				progressDialog.cancel();
 				startActivity(intent);
 			} else {
 				if (value == -1) {
-					showError(jsonResponse.getString("message"));
+					Notifications.showMessage(this,
+							jsonResponse.getString("message"));
 				} else {
-					showError("Error desconocido, inténtelo de nuevo.");
+					Notifications.showMessage(this,
+							"Error en el servidor, inténtelo de nuevo.");
 				}
 			}
 		} catch (JSONException e) {
 			Log.e("log_tag", "Error leyendo InputStream" + e.toString());
-			showError("Ha ocurrido un error en la respuesta del servidor, inténtelo de nuevo.");
+			Notifications
+					.showMessage(this,
+							"Ha ocurrido un error en la respuesta del servidor, inténtelo de nuevo.");
 		}
 	}
 
@@ -173,7 +169,8 @@ public class Login extends Activity implements OnClickListener {
 				}
 			} catch (IOException e) {
 				Log.e("log_tag", "Error leyendo InputStream" + e.toString());
-				showError("Error leyendo los datos, inténtelo de nuevo.");
+				Notifications.showMessage(getApplicationContext(),
+						"Error leyendo los datos, inténtelo de nuevo.");
 			}
 			return answer;
 		}
@@ -182,5 +179,13 @@ public class Login extends Activity implements OnClickListener {
 		protected void onPostExecute(String result) {
 			readResponse();
 		}
+	}
+
+	public static boolean checkConnection(Context context) {
+		ConnectivityManager conMngr = (ConnectivityManager) context
+				.getSystemService(Context.CONNECTIVITY_SERVICE);
+		NetworkInfo nwkInfo = conMngr.getActiveNetworkInfo();
+		return nwkInfo != null && nwkInfo.isConnected()
+				&& nwkInfo.isAvailable();
 	}
 }

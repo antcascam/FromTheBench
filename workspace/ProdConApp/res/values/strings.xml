@@ -12,5 +12,14 @@
     <string name="prodconBtn">PRO/CON</string>
     <string name="cacheBtn">VACIAR CACHÉ</string>
     <string name="logoutBtn">CERRAR SESIÓN</string>
+    <string name="downloadService">Servicio de descarga</string>
+    <string name="downloading">Descargando imágenes&#8230;</string>
+    <string name="prodTitleText1">LISTA DE PRODUCTOR/</string>
+    <string name="prodTitleText2">CONSUMIDOR</string>
+    <string name="consTitleTxt1">LISTA DE NÚMEROS</string>
+    <string name="consTitleTxt2">CONSUMIDOS</string>
+    <string name="procon">Pro/Con activity</string>
+    <string name="item">Item list</string>
+    <string name="portrait">Retrato del desarrollador</string>
 
 </resources>

@@ -3,7 +3,6 @@
     android:id="@+id/LayoutAbout"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@android:color/transparent"
     android:measureWithLargestChild="true"
     android:orientation="vertical" >
 
@@ -12,8 +11,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="center"
-        android:layout_marginTop="150dp"
-        android:background="@android:color/transparent" >
+        android:layout_marginTop="150dp" >
 
         <ProgressBar
             android:layout_width="100dp"
@@ -34,6 +32,7 @@
         android:layout_width="250dp"
         android:layout_height="50dp"
         android:layout_marginLeft="80dp"
+        android:text="@string/downloading"
         android:textAppearance="?android:attr/textAppearanceSmall"
         android:textColor="@android:color/white" />
 

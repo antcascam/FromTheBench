@@ -8,28 +8,41 @@
         android:targetSdkVersion="19" />
 
     <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
 
     <application
         android:allowBackup="true"
         android:icon="@drawable/ic_launcher"
         android:label="@string/app_name"
         android:theme="@android:style/Theme.NoTitleBar.Fullscreen" >
-        <service android:name="DownloadService"/>
+        <service android:name="com.fromthebench.prodcon.DownloadService$DownloaderService" />
+
         <activity
             android:name="com.fromthebench.prodcon.Login"
-            android:label="@string/app_name" 
-            android:screenOrientation="portrait">
+            android:label="@string/app_name"
+            android:screenOrientation="portrait" >
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
                 <category android:name="android.intent.category.LAUNCHER" />
-            
+            
             </intent-filter>
-         
+         
         </activity>
         <activity
             android:name="com.fromthebench.prodcon.Dashboard"
             android:label="@string/dashboard"
+            android:screenOrientation="portrait" >
+        </activity>
+        <activity
+            android:name="com.fromthebench.prodcon.DownloadService"
+            android:theme="@style/Theme.CustomTranslucent"
+            android:label="@string/downloadService"
+            android:screenOrientation="portrait" >
+        </activity>
+        <activity
+            android:name="com.fromthebench.prodcon.ProCon"
+            android:label="@string/procon"
             android:screenOrientation="portrait" >
         </activity>
     </application>
