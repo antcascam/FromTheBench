@@ -30,6 +30,7 @@
         android:paddingLeft="10dp"
         android:paddingRight="5dp"
         android:textColorHint="@android:color/black"
+        android:hint="@string/loginUser"
         android:textStyle="bold"
         android:textSize="20sp"
         android:typeface="normal" />
@@ -48,6 +49,7 @@
         android:textColorHint="@android:color/black"
         android:textStyle="bold"
         android:textSize="20sp"
+        android:hint="@string/loginPass"
         android:inputType="textPassword"
         android:typeface="normal" />
 

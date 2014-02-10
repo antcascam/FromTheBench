@@ -1,68 +1,102 @@
 package com.fromthebench.prodcon;
 
 import java.util.ArrayList;
+import java.util.concurrent.BlockingQueue;
+import java.util.concurrent.SynchronousQueue;
 
+import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Message;
 import android.widget.ListView;
 
 public class ProCon extends Activity {
+	BlockingQueue<Integer> generatedNumbers;
+	private Consumer consumer;
+	private Producer producer;
+	private Handler handlerProducer;
+	private Handler handlerConsumer;
+	private ArrayList<ProConItem> itemsPro;
+	private ArrayList<ProConItem> itemsCon;
+	ListView listPro;
+	ListView listCon;
 
+	@SuppressLint("HandlerLeak")
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.procon);
+		listPro = (ListView) findViewById(R.id.producerList);
+		listCon = (ListView) findViewById(R.id.consumerList);
 
-		ListView listPro = (ListView) findViewById(R.id.producerList);
-		ListView listCon = (ListView) findViewById(R.id.consumerList);
+		generatedNumbers = new SynchronousQueue<Integer>();
+		itemsPro = new ArrayList<ProConItem>();
+		itemsCon = new ArrayList<ProConItem>();
 
-		ArrayList<ProConItem> itemsPro = obtenerItemsPro();
-		ArrayList<ProConItem> itemsCon = obtenerItemsCon();
+		handlerProducer = new Handler() {
+			@SuppressLint("HandlerLeak")
+			@Override
+			public void handleMessage(Message msg) {
+				Bundle bundle;
+				bundle = msg.getData();
+				if (bundle.containsKey("internetConnection")
+						&& !bundle.getBoolean("internetConnection")) {
+					checkConnection();
+				} else {
+					if (bundle.containsKey("newNumber"))
+						updateProducerList(bundle.getInt("newNumber"));
+				}
+			}
+		};
 
+		handlerConsumer = new Handler() {
+			@Override
+			public void handleMessage(Message msg) {
+				Bundle bundle;
+				bundle = msg.getData();
+				updateConsumerList(bundle.getInt("cunsumedNumber"));
+			}
+		};
+
+		producer = new Producer("Producer", generatedNumbers, this);
+		consumer = new Consumer("Consumer", generatedNumbers);
+		producer.setHandler(handlerProducer);
+		consumer.setHandler(handlerConsumer);
+
+		startProCon();
+	}
+
+	public void startProCon() {
+		producer.start();
+		consumer.start();
+	}
+
+	private void updateProducerList(int numberToPut) {
+		itemsPro.add(new ProConItem(itemsPro.size(), numberToPut));
 		ItemProAdapter adapterPro = new ItemProAdapter(this, itemsPro);
-		ItemConsAdapter adapterCon = new ItemConsAdapter(this, itemsCon);
+		listPro.setAdapter(adapterPro);
+	}
 
+	private void updateConsumerList(int numberToPut) {
+		itemsCon.add(new ProConItem(itemsPro.size(), numberToPut));
+		itemsPro.remove(0);
+		ItemConsAdapter adapterCon = new ItemConsAdapter(this, itemsCon);
+		ItemProAdapter adapterPro = new ItemProAdapter(this, itemsPro);
 		listPro.setAdapter(adapterPro);
 		listCon.setAdapter(adapterCon);
-
-//		initProCon();
 	}
 
-	private void initProCon() {
-		int listSize = 10;
-		BackgroundThread back = new BackgroundThread();
-
-		back.setDaemon(false);
-		back.start();
-
-		while (listSize > 0) {
-			back.executeTask();
-			listSize--;
-		}
+	@Override
+	public void onDestroy() {
+		super.onDestroy();
+		producer.finish();
+		consumer.finish();
 	}
 
-	private ArrayList<ProConItem> obtenerItemsPro() {
-		ArrayList<ProConItem> items = new ArrayList<ProConItem>();
-
-		// TODO: añadir items desde servidor
-		items.add(new ProConItem(0, 1));
-		items.add(new ProConItem(1, 3));
-		items.add(new ProConItem(2, 5));
-		items.add(new ProConItem(3, 6));
-
-		return items;
-	}
-
-	private ArrayList<ProConItem> obtenerItemsCon() {
-		ArrayList<ProConItem> items = new ArrayList<ProConItem>();
-
-		// TODO: añadir items desde servidor
-		items.add(new ProConItem(0, 7));
-		items.add(new ProConItem(1, 1));
-		items.add(new ProConItem(2, 4));
-		items.add(new ProConItem(3, 8));
-
-		return items;
+	private void checkConnection() {
+		Notifications.showMessage(this,
+				"Por favor, compruebe su conexión a internet.");
 	}
 
 }

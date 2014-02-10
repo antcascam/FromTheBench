@@ -21,5 +21,8 @@
     <string name="procon">Pro/Con activity</string>
     <string name="item">Item list</string>
     <string name="portrait">Retrato del desarrollador</string>
+    <string name="linkedin">Ver perfil en LinkedIn</string>
+    <string name="returnButton">Volver</string>
+    <string name="aboutTxt">Antonio J. Castaño Desarrollador Android y Java.</string>
 
 </resources>
