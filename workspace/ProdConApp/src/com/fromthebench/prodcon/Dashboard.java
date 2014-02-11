@@ -3,13 +3,17 @@ package com.fromthebench.prodcon;
 import java.io.File;
 
 import android.app.Activity;
+import android.app.Dialog;
 import android.content.Context;
 import android.content.ContextWrapper;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.graphics.drawable.ColorDrawable;
+import android.net.Uri;
 import android.os.Bundle;
 import android.view.View;
 import android.view.View.OnClickListener;
+import android.view.Window;
 import android.widget.Button;
 
 import com.nineoldandroids.animation.ObjectAnimator;
@@ -107,7 +111,33 @@ public class Dashboard extends Activity {
 	}
 
 	public void aboutMe() {
-		Notifications
-				.showAboutMeMessage(this, "Antonio J Castaño - Developer.");
+		final Dialog customDialog = new Dialog(this);
+		customDialog.getWindow().setBackgroundDrawable(
+				new ColorDrawable(android.graphics.Color.TRANSPARENT));
+		customDialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
+		customDialog.setCancelable(false);
+		customDialog.setContentView(R.layout.aboutme);
+
+		((Button) customDialog.findViewById(R.id.aboutButton))
+				.setOnClickListener(new OnClickListener() {
+					@Override
+					public void onClick(View view) {
+						customDialog.dismiss();
+					}
+				});
+
+		((Button) customDialog.findViewById(R.id.linkedinButton))
+				.setOnClickListener(new OnClickListener() {
+					@Override
+					public void onClick(View view) {
+						Uri uriUrl = Uri
+								.parse("http://www.linkedin.com/in/ajcastano");
+						Intent launchBrowser = new Intent(Intent.ACTION_VIEW,
+								uriUrl);
+						startActivity(launchBrowser);
+					}
+				});
+
+		customDialog.show();
 	}
 }

@@ -1,68 +1,107 @@
 package com.fromthebench.prodcon;
 
 import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.concurrent.BlockingQueue;
+import java.util.concurrent.LinkedBlockingQueue;
 
+import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Message;
 import android.widget.ListView;
 
 public class ProCon extends Activity {
+	BlockingQueue<Integer> generatedNumbers;
+	private Consumer consumer;
+	private Producer producer;
+	private Handler handlerProducer;
+	private Handler handlerConsumer;
+	private ArrayList<ProConItem> itemsPro;
+	private ArrayList<ProConItem> itemsCon;
+	ListView listPro;
+	ListView listCon;
 
+	@SuppressLint("HandlerLeak")
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.procon);
+		listPro = (ListView) findViewById(R.id.producerList);
+		listCon = (ListView) findViewById(R.id.consumerList);
 
-		ListView listPro = (ListView) findViewById(R.id.producerList);
-		ListView listCon = (ListView) findViewById(R.id.consumerList);
+		listPro.setTranscriptMode(ListView.TRANSCRIPT_MODE_ALWAYS_SCROLL);
+		listCon.setTranscriptMode(ListView.TRANSCRIPT_MODE_ALWAYS_SCROLL);
 
-		ArrayList<ProConItem> itemsPro = obtenerItemsPro();
-		ArrayList<ProConItem> itemsCon = obtenerItemsCon();
+		generatedNumbers = new LinkedBlockingQueue<Integer>(10);
+		itemsPro = new ArrayList<ProConItem>();
+		itemsCon = new ArrayList<ProConItem>();
 
-		ItemProAdapter adapterPro = new ItemProAdapter(this, itemsPro);
-		ItemConsAdapter adapterCon = new ItemConsAdapter(this, itemsCon);
+		handlerProducer = new Handler() {
+			@SuppressLint("HandlerLeak")
+			@Override
+			public void handleMessage(Message msg) {
+				Bundle bundle;
+				bundle = msg.getData();
+				if (bundle.containsKey("internetConnection")
+						&& !bundle.getBoolean("internetConnection")) {
+					checkConnection();
+				} else {
+					if (bundle.containsKey("newNumber"))
+						updateProducerList();
+				}
+			}
+		};
 
-		listPro.setAdapter(adapterPro);
-		listCon.setAdapter(adapterCon);
+		handlerConsumer = new Handler() {
+			@Override
+			public void handleMessage(Message msg) {
+				Bundle bundle;
+				bundle = msg.getData();
+				updateConsumerList(bundle.getInt("cunsumedNumber"));
+			}
+		};
 
-//		initProCon();
+		producer = new Producer("Producer", generatedNumbers, this);
+		consumer = new Consumer("Consumer", generatedNumbers);
+		producer.setHandler(handlerProducer);
+		consumer.setHandler(handlerConsumer);
+
+		startProCon();
 	}
 
-	private void initProCon() {
-		int listSize = 10;
-		BackgroundThread back = new BackgroundThread();
+	public void startProCon() {
+		producer.start();
+		consumer.start();
+	}
 
-		back.setDaemon(false);
-		back.start();
-
-		while (listSize > 0) {
-			back.executeTask();
-			listSize--;
+	private void updateProducerList() {
+		Iterator<Integer> it = generatedNumbers.iterator();
+		itemsPro.clear();
+		while (it.hasNext()) {
+			itemsPro.add(new ProConItem(itemsPro.size(), it.next()));
 		}
+		ItemProAdapter adapterPro = new ItemProAdapter(this, itemsPro);
+		listPro.setAdapter(adapterPro);
 	}
 
-	private ArrayList<ProConItem> obtenerItemsPro() {
-		ArrayList<ProConItem> items = new ArrayList<ProConItem>();
-
-		// TODO: añadir items desde servidor
-		items.add(new ProConItem(0, 1));
-		items.add(new ProConItem(1, 3));
-		items.add(new ProConItem(2, 5));
-		items.add(new ProConItem(3, 6));
-
-		return items;
+	private void updateConsumerList(int numberToPut) {
+		itemsCon.add(new ProConItem(itemsCon.size(), numberToPut));
+		ItemConsAdapter adapterCon = new ItemConsAdapter(this, itemsCon);
+		listCon.setAdapter(adapterCon);
 	}
 
-	private ArrayList<ProConItem> obtenerItemsCon() {
-		ArrayList<ProConItem> items = new ArrayList<ProConItem>();
+	@Override
+	public void onDestroy() {
+		super.onDestroy();
+		producer.finish();
+		consumer.finish();
+	}
 
-		// TODO: añadir items desde servidor
-		items.add(new ProConItem(0, 7));
-		items.add(new ProConItem(1, 1));
-		items.add(new ProConItem(2, 4));
-		items.add(new ProConItem(3, 8));
-
-		return items;
+	private void checkConnection() {
+		Notifications.showMessage(this,
+				"Por favor, compruebe su conexión a internet.");
 	}
 
 }

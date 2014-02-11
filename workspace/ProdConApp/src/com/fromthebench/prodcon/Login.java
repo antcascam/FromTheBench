@@ -64,24 +64,13 @@ public class Login extends Activity implements OnClickListener {
 	}
 
 	private void tryToStartConnection() {
-		if (!checkConnection(this)) {
-			Notifications.showProgressDialog(this, "Iniciando sesión...");
-			((Button) Notifications.customDialog.findViewById(R.id.errorButton))
-					.setOnClickListener(new OnClickListener() {
-						@Override
-						public void onClick(View view) {
-							Notifications.customDialog.dismiss();
-							Notifications.cancelProgressDialog();
-							finish();
-						}
-					});
-			Notifications
-					.showConnectionError(
-							this,
-							"Por favor, compruebe su conexión a internet y vuelva a iniciar la aplicación, gracias.");
-		} else {
+		if (checkConnection()) {
 			Intent intent = new Intent(this, DownloadService.class);
 			startActivityForResult(intent, IMGLOADER);
+		} else {
+			Notifications
+					.showMessage(this,
+							"Por favor, compruebe su conexión a internet y vuelva a intentarlo, gracias.");
 		}
 	}
 
@@ -92,20 +81,26 @@ public class Login extends Activity implements OnClickListener {
 			loginProcess(username, password);
 		}
 	}
-
+	
 	public void onClick(View v) {
 		Notifications.showProgressDialog(this, "Iniciando sesión...");
-		if (txtUsuario.getText().toString().equals("")
-				|| txtPassword.getText().toString().equals("")) {
-			Notifications.showMessage(this,
-					"Por favor, rellene los campos usuario y contraseña.");
+		if (checkConnection()) {
+			if (txtUsuario.getText().toString().equals("")
+					|| txtPassword.getText().toString().equals("")) {
+				Notifications.showMessage(this,
+						"Por favor, rellene los campos usuario y contraseña.");
+			} else {
+				String user = txtUsuario.getText().toString();
+				String password = txtPassword.getText().toString();
+				getSharedPreferences(PREFS_LOGIN_NAME, MODE_PRIVATE).edit()
+						.putString(PREF_USERNAME, user)
+						.putString(PREF_PASSWORD, password).commit();
+				loginProcess(user, password);
+			}
 		} else {
-			String user = txtUsuario.getText().toString();
-			String password = txtPassword.getText().toString();
-			getSharedPreferences(PREFS_LOGIN_NAME, MODE_PRIVATE).edit()
-					.putString(PREF_USERNAME, user)
-					.putString(PREF_PASSWORD, password).commit();
-			loginProcess(user, password);
+			Notifications
+					.showMessage(this,
+							"Por favor, compruebe su conexión a internet y vuelva a intentarlo, gracias.");
 		}
 	}
 
@@ -181,8 +176,8 @@ public class Login extends Activity implements OnClickListener {
 		}
 	}
 
-	public static boolean checkConnection(Context context) {
-		ConnectivityManager conMngr = (ConnectivityManager) context
+	public boolean checkConnection() {
+		ConnectivityManager conMngr = (ConnectivityManager) this
 				.getSystemService(Context.CONNECTIVITY_SERVICE);
 		NetworkInfo nwkInfo = conMngr.getActiveNetworkInfo();
 		return nwkInfo != null && nwkInfo.isConnected()

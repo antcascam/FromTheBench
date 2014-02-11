@@ -5,8 +5,8 @@ import android.app.ProgressDialog;
 import android.content.Context;
 import android.graphics.drawable.ColorDrawable;
 import android.view.View;
-import android.view.Window;
 import android.view.View.OnClickListener;
+import android.view.Window;
 import android.widget.Button;
 import android.widget.TextView;
 
@@ -47,47 +47,10 @@ public class Notifications {
 					@Override
 					public void onClick(View view) {
 						customDialog.dismiss();
+						cancelProgressDialog();
 					}
 				});
 		customDialog.show();
 		Notifications.cancelProgressDialog();
 	}
-
-	public static void showConnectionError(Context context, String errorMessage) {
-		customDialog = new Dialog(context);
-		customDialog.getWindow().setBackgroundDrawable(
-				new ColorDrawable(android.graphics.Color.TRANSPARENT));
-		customDialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
-		customDialog.setCancelable(false);
-		customDialog.setContentView(R.layout.error);
-
-		TextView contenido = (TextView) customDialog
-				.findViewById(R.id.errorMessage);
-		contenido.setText(errorMessage);
-
-		customDialog.show();
-	}
-
-	public static void showAboutMeMessage(Context context, String errorMessage) {
-		customDialog = new Dialog(context);
-		customDialog.getWindow().setBackgroundDrawable(
-				new ColorDrawable(android.graphics.Color.TRANSPARENT));
-		customDialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
-		customDialog.setCancelable(false);
-		customDialog.setContentView(R.layout.aboutme);
-
-		TextView contenido = (TextView) customDialog
-				.findViewById(R.id.aboutTxt);
-		contenido.setText(errorMessage);
-
-		((Button) customDialog.findViewById(R.id.aboutButton))
-				.setOnClickListener(new OnClickListener() {
-					@Override
-					public void onClick(View view) {
-						customDialog.dismiss();
-					}
-				});
-		customDialog.show();
-	}
-
 }

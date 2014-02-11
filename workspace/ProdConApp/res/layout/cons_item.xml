@@ -6,8 +6,8 @@
 
     <ImageView
         android:id="@+id/imageView1"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+        android:layout_width="120dp"
+        android:layout_height="51dp"
         android:layout_gravity="center"
         android:contentDescription="@string/item"
         android:src="@drawable/caja_gris" />
@@ -19,7 +19,7 @@
         android:layout_gravity="center"
         android:textAppearance="?android:attr/textAppearanceLarge"
         android:textColor="#19A394"
-        android:textSize="35sp"
+        android:textSize="28sp"
         android:textStyle="bold"
         android:typeface="normal" />
 

@@ -1,0 +1,47 @@
+Respuestas:
+
+1. ¿Qué ventajas y desventajas conlleva utilizar Fragments frente a Activities?
+
+ 	Ventajas son muchas, ya que ofrece mucha facilidad para maquetar disntos 
+	formatos de pantallas sin necesidad de escribir un layout para cada
+	formato de pantalla, sino que se puede reubicar un mismo fragment
+	de distintas formas. El hecho de que una Activity pueda contener 
+	varios layouts y además disponer de framents estáticos y dinámicos
+	ofrece una potencia brutal.
+  	Desventajas, solo se me ocurre mencionar que el trabajo para hacer encajar
+	muchos fragmentos en uno puede ser algo tedioso.
+
+2. Al hacer login, se ha enviado el usuario y la contraseña como parámetros GET en texto plano.
+2.1.¿Qué inconveniente tiene esto?
+
+	Ofrece una seguridad mínima, ya que la petición no lleva encriptación
+	ni nada, y es fácilmente accesible por cualquiera que revise la conexión.
+
+2.2.¿Cómo lo solucionarías?
+
+	Si tengo que usar una llamada GET, al menos procuraría que fueste bajo
+	https, ya que así se encriptaría la petición. En cualquier otro caso,
+	usaría POST, que es mucho más seguro, o incluso una encriptación en
+	cliente de la petición GET que sepa leerla el servidor.
+
+3.¿Es mejor utilizar imágenes en formato *.png o *.jpg?
+
+	En formato *.png, mayormente porque permite el uso de transparencias en 
+	las imágenes, además de que al comprimirla, la imagen no pierde calidad,
+	mientras que jpg si va perdiendo calidad. Además el tamaño también es 
+	algo crítico en los dispositivos móviles, y los png ocupan algo menos.
+
+3.1.¿Cómo afecta el formato de la imagen a la memoria del dispositivo?
+
+	Normalmente, aunque cada vez menos, los dispositivos móviles tienen poca
+	memoria interna y una aplicación con muchas imágenes puede llegar a doblar
+	su tamaño dependiendo sólamente de la compresión usada en dichas imágenes,
+	lo cual, cuando el almacenamiento escasea, no es una buena baza.
+
+4.Es “frecuente” acceder a un campo de un elemento JSON (JSONObject o JSONArray) que no
+existe, provocando un NPE (Null Pointer Exception). ¿Qué ideas se te ocurren para lidiar con este
+problema?
+
+	Normalmente el uso adecuado es capturar la excepción en un try/catch, y si
+	no pues antes de acceder al campo, preguntar si existe con JSON.has(String)
+	simplemente un bloque if (json != null).
